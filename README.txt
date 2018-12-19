@@ -1,3 +1,5 @@
+Hugo Magnaudet, 19 décembre 2018 :
+
 Placez le dossier "views" ainsi que le fichier script.js dans un même répertoire
 
 Pour installer les modules javascript nécessaires :
