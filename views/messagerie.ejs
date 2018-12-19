@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+      <title><%= v_site%></title>
+      <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  </head>
+  <body>
+    <h1>Ma Messagerie <%= v_site%></h1>
+    <a class="lien" href="http://localhost:8080/home/login">Accéder au site</a>
+    <br/>
+    <br/>
+    <%
+    var i;
+    for(i=(v_mess.length)-1;i>=0; i--){
+    %>
+    <hr>
+    <p><%= v_mess[i]%> <br/><br/>- <%= v_exp[i]%> - <%= v_date[i]%></p>
+    <%}%>
+    <hr/>
+    <address><a href="mailto:hugo.magnaudet@gmail.com">MAGNAUDET hugo</a></address>
+  </body>
+  <script src="/script.js"></script>
+</html>
