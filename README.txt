@@ -1,4 +1,4 @@
-Hugo Magnaudet, 19 décembre 2018 :
+Hugo Magnaudet, 21 janvier 2019 :
 
 Placez le dossier "views" ainsi que le fichier script.js dans un même répertoire
 
@@ -23,5 +23,4 @@ Lancez le serveur en exécutant le script : nodejs script.js.
 Ouvrez votre navigateur sur l'adresse URL : localhost:8080.
 
 Pour que le site fonctionne il faut modifier dans le fichier script.js :
-- ligne 22 et 31 : décommentez la ligne et entrez votre mot de passe pour accéder à votre base de donnée mysql si vous l'avez configurée comme telle.
-- ligne 24 et 32 : remplacer 'mydatabase' par le nom de votre base de données.
+.ligne 21 à 36 : Entrez votre mot de passe pour accéder à votre base de donnée mysql si vous l'avez configurée comme telle, ainsi que votre identifiant et le nom de votre base de données mysql.

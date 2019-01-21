@@ -1,25 +1,27 @@
-var site = 'ArteView';
+var site = 'IsarteCréa';
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
 var passwordHash = require('password-hash');
 var JSAlert = require("js-alert");
+var openurl = require("openurl");
+var win;
 serv = express();
 serv.use(bodyParser.json());
 serv.use(bodyParser.urlencoded({ extended: false }));
 serv.use(session({
-	secret : "le site de Hugo",
+	secret : "IsarteCréa",
 	saveUninitialized: false,
 	resave: false
 }));
-serv.set('view engine','ejs');
+serv.set('view engine', 'ejs');
 
 /**********************************************BASE DE DONNEES**********************************************/
 var con = mysql.createConnection({
 	host : 'localhost',
 	user : 'root',
-	//password :
+	password : 'Hma1997*$'
 });
 con.query('CREATE DATABASE IF NOT EXISTS mydatabase',function(err,rows,fields){
 	if(err) throw err;
@@ -28,7 +30,7 @@ con.end();
 var connection = mysql.createConnection({
     host     : 'localhost',
     user     : 'root',
-    //password :
+    password : 'Hma1997*$',
     database : 'mydatabase',
     multipleStatements : true
 });
@@ -52,22 +54,20 @@ connection.query('INSERT INTO message (contenu,id_client,expediteur,date_envoi) 
 });
 */
 
-
-
 /**********************************************ACCEUIL/CONNEXION/INSCRIPTION**********************************************/
-serv.get('/',function(req,res){
+/*serv.get('/',function(req,res){
     res.render('home.ejs',{
 			v_site : site
 		});
-});
-serv.post('/home',function(req,res){
-    if(req.body.iden == 1){
+});*/
+serv.get('/',function(req,res){
+    //if(req.body.iden == 1){
       res.render('formulaire.ejs',{
         v_boll : true,
 				v_site : site
       });
-    }
-    else if(req.body.iden == 0){
+    //}
+    /*else if(req.body.iden == 0){
       res.render('formulaire.ejs',{
         v_boll : false,
 				v_site : site
@@ -75,7 +75,16 @@ serv.post('/home',function(req,res){
     }
     else{
     	res.redirect('/');
-    }
+    }*/
+});
+
+serv.get('/home/inscription',function(req,res){
+	if(req.session.privi){
+		res.render('formulaire.ejs',{
+			v_boll : false,
+			v_site : site
+		});
+	}
 });
 
 serv.post('/home/inscription',function(req,res){
@@ -101,32 +110,27 @@ serv.post('/home/inscription',function(req,res){
     	if(inscr){
    			connection.query('INSERT INTO client (nom,prenom,login,mdp,mail, privilege) VALUES (\''+req.body.lastName+'\',\''+req.body.lastName4+'\',\''+req.body.lastName2+'\',\''+passwordHash.generate(req.body.pwd1)+'\',\''+req.body.myMail+'\', 0)',function(err,rows,fields){
 					if (err) throw err;
-					connection.query('SELECT id, login FROM client WHERE login=\''+req.body.lastName2+'\' ',function(err,rows,fields){
+					connection.query('SELECT * FROM client WHERE login=\''+req.body.lastName2+'\' ',function(err,rows,fields){
 						if (err) throw err;
 						var name = rows[0].login;
 						var id = rows[0].id;
+						var email = rows[0].mail;
 						connection.query('INSERT INTO message (contenu, id_client,expediteur,date_envoi) VALUES (\'Bonjour, '+name+' merci pour votre inscription\','+id+',\'ArteView\', NOW())',function(err,rows,fields){
 							if (err) throw err;
+							var sujet = "Confirmation inscription "+site;
+							var body_message = "Bonjour "+name+", Veuillez cliquer sur le lien suivant pour confirmer votre inscription sur "+site+". ";
+							//openurl.mailto([email],{subject: sujet, body: body_message});
 						});
 					});
 				});
-				req.session.login = req.body.lastName2;
+				//req.session.login = req.body.lastName2;
 				res.render('acceuil.ejs',{
 					v_prin : false,
-					v_bien : 'Merci pour votre inscription '+req.body.lastName2,
+					v_bien : req.body.lastName2+" est inscrit",
 					v_site : site
 				});
     	}
     	else{
-        if(error == 1){
-          JSAlert.alert("Login déjà utilisé");
-        }
-        if(error == 2){
-          JSAlert.alert("EMail déjà utilisé");
-        }
-				if(error == 3){
-					JSAlert.alert('Une erreur s\'est produite');
-				}
     		res.redirect('/');
     	}
     });
@@ -166,6 +170,8 @@ serv.post('/home/login',function(req,res){
 	});
 });
 
+
+/*MODIFIER : POUVOIR ACCEDER A UN MINIMUM DE PRESENTATION SANS SE LOGGER*/
 serv.get('/home/login',function(req,res){
 	if(req.session.login != undefined){
 		connection.query('SELECT * FROM client WHERE login=\''+req.session.login+'\' ',function(err,rows,fields){
@@ -214,8 +220,8 @@ serv.get('/home/user/:id_user',function(req,res){
 	});
 });
 serv.get('/home/modification',function(req,res){
-	if(req.session.login == undefined  || req.session.user == undefined){
-		res.send(401,"You didn't logged in !");
+	if(req.session.login == undefined  || req.session.user == undefined || req.session.privi != 1){
+		res.send(401,"Vous ne pouvez pas être là");
 	}
 	else{
 		res.render('modif.ejs',{
@@ -289,6 +295,7 @@ serv.get('/home/administration/users',function(req,res){
 					tmp.push(rows[i].prenom);
 					tmp.push(rows[i].login);
 					tmp.push(rows[i].mail);
+					tmp.push('http://localhost:8080/home/user/:'+rows[i].login);
 					client.push(tmp);
 				}
 			}
@@ -307,7 +314,6 @@ serv.get('/home/administration/users',function(req,res){
 	}
 });
 /**/
-
 serv.use(function(req,res){
 	res.status(404).send("Erreur 404, cette page n'existe pas");
 });
