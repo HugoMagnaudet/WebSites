@@ -21,8 +21,9 @@ serv.set('view engine', 'ejs');
 var con = mysql.createConnection({
 	host : 'localhost',
 	user : 'root',
-	password : 'Hma1997*$'
+	password : ''
 });
+con.connect();
 con.query('CREATE DATABASE IF NOT EXISTS mydatabase',function(err,rows,fields){
 	if(err) throw err;
 });
@@ -30,52 +31,91 @@ con.end();
 var connection = mysql.createConnection({
     host     : 'localhost',
     user     : 'root',
-    password : 'Hma1997*$',
+    password : '',
     database : 'mydatabase',
     multipleStatements : true
 });
 connection.connect();
 
-connection.query('CREATE TABLE IF NOT EXISTS client(id INT UNSIGNED NOT NULL AUTO_INCREMENT,nom VARCHAR(255) NOT NULL,prenom VARCHAR(255) NOT NULL,login VARCHAR(255) NOT NULL,mdp VARCHAR(255) NOT NULL, mail VARCHAR(255) NOT NULL,privilege INT UNSIGNED NOT NULL, PRIMARY KEY (id))ENGINE=INNODB', function(err, rows, fields) {
+connection.query('CREATE TABLE IF NOT EXISTS societe(id INT UNSIGNED NOT NULL AUTO_INCREMENT, nom VARCHAR(255) NOT NULL, PRIMARY KEY (id))ENGINE=INNODB',function(err,rows,fields){
+	if (err) throw err;
+});
+connection.query('CREATE TABLE IF NOT EXISTS client(id INT UNSIGNED NOT NULL AUTO_INCREMENT,nom VARCHAR(255) NOT NULL,prenom VARCHAR(255) NOT NULL,login VARCHAR(255) NOT NULL,mdp VARCHAR(255) NOT NULL, mail VARCHAR(255) NOT NULL,privilege INT UNSIGNED NOT NULL, soc INT UNSIGNED NOT NULL, PRIMARY KEY (id), FOREIGN KEY(soc) REFERENCES societe(id))ENGINE=INNODB', function(err, rows, fields) {
     if (err) throw err;
 });
 connection.query('CREATE TABLE IF NOT EXISTS message(id INT UNSIGNED NOT NULL AUTO_INCREMENT, contenu VARCHAR(1000) NOT NULL, id_client INT UNSIGNED, expediteur VARCHAR(255) NOT NULL, date_envoi DATETIME NOT NULL,PRIMARY KEY (id),FOREIGN KEY(id_client) REFERENCES client(id))ENGINE=INNODB',function(err,rows,fields){
 	if (err) throw err;
 });
 
+//Création d'une société
+/*connection.query('INSERT INTO societe (nom) VALUES (\'ArteView\')',function(err,rows,fields){
+	if (err) throw err;
+});*.
 //Création d'un compte administrateur
-/*
-var monmdp = 'Elsa';
-connection.query('INSERT INTO client (nom,prenom,login,mdp,mail,privilege) VALUES (\'Magnaudet-Marto\', \'Elsa\', \''+site+'Admin\', \''+passwordHash.generate(monmdp)+'\',\'elsa.magnaudet@wanadoo.fr\', 1)',function(err,rows,fields){
+/*var monmdp = 'Elsa';
+connection.query('INSERT INTO client (nom,prenom,login,mdp,mail,privilege,soc) VALUES (\'Magnaudet-Marto\', \'Elsa\', \''+site+'Admin\', \''+passwordHash.generate(monmdp)+'\',\'elsa.magnaudet@wanadoo.fr\', 1, 1)',function(err,rows,fields){
 	if (err) throw err;
 });
 connection.query('INSERT INTO message (contenu,id_client,expediteur,date_envoi) VALUES (\'Bienvenu sur votre compte Administrateur '+site+'.\', 1, \'Hugo Magnaudet\',NOW())',function(err,rows,fields){
 	if (err) throw err;
+});*/
+
+/**********************************************CREATION DICTIONNAIRE SUGGESTION DE SOCIETE**********************************************/
+function Dictionnaire(){
+	this.dico = [];
+	this.insert = function(word){
+		this.dico.push(word);
+	}
+	this.search = function(word){
+		for(var i=0; i<this.dico.length;i++){
+			if(word == this.dico[i]){
+				return true;
+			}
+		}
+		return false;
+	}
+	this.list = function(){
+		return this.dico.sort();
+	}
+	this.prefixSearch = function(query, maxResults){
+		found = [];
+		for (var i = 0; i <this.dico.length && found.length < maxResults+1; i++) {
+			var tmp = this.dico[i].substring(0,query.length);
+			if(tmp == query){
+				found.push(this.dico[i]);
+			}
+		}
+		return found;
+	}
+	this.betterChoice = function(query){
+		better = [];
+		for (var i = 0; i <this.dico.length; i++) {
+			var tmp = this.dico[i].substring(0,query.length);
+			var tmp2 = query.substring(0,this.dico[i].length);
+			if(tmp == query){
+				better.push(this.dico[i]);
+			}
+			else if(tmp2 == this.dico[i]){
+				better.push(this.dico[i]);
+			}
+		}
+		return better;
+	}
+}
+var dic = new Dictionnaire();
+connection.query('SELECT nom FROM societe',function(err,rows,fields){
+	if (err) throw err;
+	for(var i=0;i<rows.length;i++){
+		dic.insert(""+rows[i].nom+"");
+	}
 });
-*/
 
 /**********************************************ACCEUIL/CONNEXION/INSCRIPTION**********************************************/
-/*serv.get('/',function(req,res){
-    res.render('home.ejs',{
-			v_site : site
-		});
-});*/
 serv.get('/',function(req,res){
-    //if(req.body.iden == 1){
       res.render('formulaire.ejs',{
         v_boll : true,
 				v_site : site
       });
-    //}
-    /*else if(req.body.iden == 0){
-      res.render('formulaire.ejs',{
-        v_boll : false,
-				v_site : site
-      });
-    }
-    else{
-    	res.redirect('/');
-    }*/
 });
 
 serv.get('/home/inscription',function(req,res){
@@ -89,52 +129,67 @@ serv.get('/home/inscription',function(req,res){
 
 serv.post('/home/inscription',function(req,res){
 	if(!(req.body.cond == 1)){
-	connection.query('SELECT * FROM client', function(err, rows, fields) {
-    	if (err) throw err;
-    	var inscr = true;
-      var error = 0;
-    	if(req.body.pwd1 != req.body.pwd2 || req.body.lastName2 == 'undefined'){
-    		inscr = false;
-				error = 3;
-    	}
-    	for(var i=0;i<rows.length;i++){
-    		if(req.body.lastName2 == rows[i].login){
-    			inscr = false;
-          error = 1;
-    		}
-        else if(req.body.myMail == rows[i].mail){
-					inscr = false;
-          error = 2;
-        }
-    	}
-    	if(inscr){
-   			connection.query('INSERT INTO client (nom,prenom,login,mdp,mail, privilege) VALUES (\''+req.body.lastName+'\',\''+req.body.lastName4+'\',\''+req.body.lastName2+'\',\''+passwordHash.generate(req.body.pwd1)+'\',\''+req.body.myMail+'\', 0)',function(err,rows,fields){
+		var soci = -1;
+		connection.query('SELECT * FROM societe WHERE nom=\''+req.body.societe+'\'',function(err,rows,fields){
+			if (err) throw err;
+			soci = rows[0].id;
+		});
+		if(soci == -1){
+			connection.query('INSERT INTO societe (nom) VALUES (\''+req.body.societe+'\')',function(err,rows,fields){
+				if (err) throw err;
+				connection.query('SELECT * FROM societe WHERE nom=\''+req.body.societe+'\'',function(err,rows,fields){
 					if (err) throw err;
-					connection.query('SELECT * FROM client WHERE login=\''+req.body.lastName2+'\' ',function(err,rows,fields){
+					console.log(rows[0].id+" "+rows[0].nom);
+					soci = rows[0].id;
+				});
+			});
+		}
+		connection.query('SELECT * FROM client', function(err, rows, fields) {
+	    	if (err) throw err;
+	    	var inscr = true;
+	      var error = 0;
+	    	if(req.body.pwd1 != req.body.pwd2 || req.body.lastName2 == 'undefined'){
+	    		inscr = false;
+					error = 3;
+	    	}
+	    	for(var i=0;i<rows.length;i++){
+	    		if(req.body.lastName2 == rows[i].login){
+	    			inscr = false;
+	          error = 1;
+	    		}
+	        else if(req.body.myMail == rows[i].mail){
+						inscr = false;
+	          error = 2;
+	        }
+	    	}
+	    	if(inscr){
+	   			connection.query('INSERT INTO client (nom,prenom,login,mdp,mail,privilege,soc) VALUES (\''+req.body.lastName+'\',\''+req.body.lastName4+'\',\''+req.body.lastName2+'\',\''+passwordHash.generate(req.body.pwd1)+'\',\''+req.body.myMail+'\', 0,'+soci+')',function(err,rows,fields){
 						if (err) throw err;
-						var name = rows[0].login;
-						var id = rows[0].id;
-						var email = rows[0].mail;
-						connection.query('INSERT INTO message (contenu, id_client,expediteur,date_envoi) VALUES (\'Bonjour, '+name+' merci pour votre inscription\','+id+',\'ArteView\', NOW())',function(err,rows,fields){
+						connection.query('SELECT * FROM client WHERE login=\''+req.body.lastName2+'\' ',function(err,rows,fields){
 							if (err) throw err;
-							var sujet = "Confirmation inscription "+site;
-							var body_message = "Bonjour "+name+", Veuillez cliquer sur le lien suivant pour confirmer votre inscription sur "+site+". ";
-							//openurl.mailto([email],{subject: sujet, body: body_message});
+							var name = rows[0].login;
+							var id = rows[0].id;
+							var email = rows[0].mail;
+							connection.query('INSERT INTO message (contenu, id_client,expediteur,date_envoi) VALUES (\'Bonjour, '+name+' merci pour votre inscription\','+id+',\'ArteView\', NOW())',function(err,rows,fields){
+								if (err) throw err;
+								var sujet = "Confirmation inscription "+site;
+								var body_message = "Bonjour "+name+", Veuillez cliquer sur le lien suivant pour confirmer votre inscription sur "+site+". ";
+								//openurl.mailto([email],{subject: sujet, body: body_message});
+							});
 						});
 					});
-				});
-				//req.session.login = req.body.lastName2;
-				res.render('acceuil.ejs',{
-					v_prin : false,
-					v_bien : req.body.lastName2+" est inscrit",
-					v_site : site
-				});
-    	}
-    	else{
-    		res.redirect('/');
-    	}
-    });
-	}
+					//req.session.login = req.body.lastName2;
+					res.render('acceuil.ejs',{
+						v_prin : false,
+						v_bien : req.body.lastName2+" est inscrit",
+						v_site : site
+					});
+	    	}
+	    	else{
+	    		res.redirect('/');
+	    	}
+	    });
+		}
 });
 
 serv.post('/home/login',function(req,res){
@@ -170,8 +225,6 @@ serv.post('/home/login',function(req,res){
 	});
 });
 
-
-/*MODIFIER : POUVOIR ACCEDER A UN MINIMUM DE PRESENTATION SANS SE LOGGER*/
 serv.get('/home/login',function(req,res){
 	if(req.session.login != undefined){
 		connection.query('SELECT * FROM client WHERE login=\''+req.session.login+'\' ',function(err,rows,fields){
@@ -197,7 +250,6 @@ serv.get('/home/login',function(req,res){
 		res.status(401).send("Erreur 401, you didn't logged in !");
 	}
 });
-
 /**********************************************ESPACE PERSONNEL**********************************************/
 serv.get('/home/user/:id_user',function(req,res){
 	var iden = req.params.id_user.split(':');
@@ -313,7 +365,32 @@ serv.get('/home/administration/users',function(req,res){
 		res.status(401).send("Erreur 401, you don't have the authorization to be there");
 	}
 });
-/**/
+
+/*********************************************SUGGESTIONS D'ADDRESSE*************************************************/
+serv.get('/societe/dictionary', function (req,res){
+	res.json(dic.list());
+});
+
+serv.get('/societe/dictionary/search', function (req,res){
+	var tab = dic.prefixSearch(req.query.word, 5);
+	if(tab.length == 0){
+		var tab2 = dic.betterChoice(req.query.word);
+		res.json(tab2);
+	}
+	else{
+		res.json(tab);
+	}
+});
+
+serv.post('/societe/dictionary', function (req,res){
+	if(req.body.word){
+		dic.insert(req.body.word);
+		res.status(204);
+	}else{
+		res.status(422);
+	}
+});
+
 serv.use(function(req,res){
 	res.status(404).send("Erreur 404, cette page n'existe pas");
 });
