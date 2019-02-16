@@ -1,0 +1,1 @@
+pour ouvrir le site aller sur http://localhost/codeigniter/index.php/login
