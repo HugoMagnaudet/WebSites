@@ -1,0 +1,12 @@
+
+.MY_error {
+  width: 30%; 
+  margin: 0px auto; 
+  padding: 10px; 
+  border: 1px solid #a94442; 
+  color: #a94442; 
+  background: #aadede; 
+  border-radius: 5px; 
+  text-align: left;
+}
+  
