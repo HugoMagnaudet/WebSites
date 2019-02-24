@@ -19,7 +19,21 @@
       <h1>Profil ArteView de <%= v_login%></h1>
       <a class="lien" href="http://localhost:8080/home/login">Accéder au site</a>
     <%}%>
-    <p>Ici, bientôt vos commandes</p>
+
+    <%
+    if(v_devis.length == 0){
+      %>
+      <p>Ici, bientôt vos commandes</p>
+    <%}else{
+      var taille = v_devis.length;
+      var i;
+      for(i=0; i < taille; i++){%>
+        <hr>
+        <p><%=v_devis[i][0]%> - <%=v_devis[i][1]%> (<%=v_devis[i][2]%>) :</p>
+        <p><%=v_devis[i][3]%></p>
+      <%}
+    }%>
+
     <hr>
     <address><a href="mailto:hugo.magnaudet@gmail.com">MAGNAUDET hugo</a></address>
   </body>

@@ -9,6 +9,7 @@ var openurl = require("openurl");
 var win;
 serv = express();
 serv.use(bodyParser.json());
+serv.use(express.static(__dirname + '/public'))
 serv.use(bodyParser.urlencoded({ extended: false }));
 serv.use(session({
 	secret : "IsarteCréa",
@@ -37,28 +38,14 @@ var connection = mysql.createConnection({
 });
 connection.connect();
 
-connection.query('CREATE TABLE IF NOT EXISTS societe(id INT UNSIGNED NOT NULL AUTO_INCREMENT, nom VARCHAR(255) NOT NULL, PRIMARY KEY (id))ENGINE=INNODB',function(err,rows,fields){
+/******/
+connection.query('SELECT * FROM client WHERE nom=\'Magnaudet\'',function(err,rows,fields){
 	if (err) throw err;
+	if(rows.length == 0){
+		connection.query('INSERT INTO client (nom,prenom,login,mdp,mail,soc,privilege) VALUES (\'Magnaudet\', \'Hugo\', \'IsarteCréaAdmin\', \''+passwordHash.generate("Hugo")+'\',\'hugo.magnaudet@gmail.com\', 1, 1);',function(err,rows,fields){if (err) throw err;});
+	}
 });
-connection.query('CREATE TABLE IF NOT EXISTS client(id INT UNSIGNED NOT NULL AUTO_INCREMENT,nom VARCHAR(255) NOT NULL,prenom VARCHAR(255) NOT NULL,login VARCHAR(255) NOT NULL,mdp VARCHAR(255) NOT NULL, mail VARCHAR(255) NOT NULL,privilege INT UNSIGNED NOT NULL, soc INT UNSIGNED NOT NULL, PRIMARY KEY (id), FOREIGN KEY(soc) REFERENCES societe(id))ENGINE=INNODB', function(err, rows, fields) {
-    if (err) throw err;
-});
-connection.query('CREATE TABLE IF NOT EXISTS message(id INT UNSIGNED NOT NULL AUTO_INCREMENT, contenu VARCHAR(1000) NOT NULL, id_client INT UNSIGNED, expediteur VARCHAR(255) NOT NULL, date_envoi DATETIME NOT NULL,PRIMARY KEY (id),FOREIGN KEY(id_client) REFERENCES client(id))ENGINE=INNODB',function(err,rows,fields){
-	if (err) throw err;
-});
-
-//Création d'une société
-/*connection.query('INSERT INTO societe (nom) VALUES (\'ArteView\')',function(err,rows,fields){
-	if (err) throw err;
-});*.
-//Création d'un compte administrateur
-/*var monmdp = 'Elsa';
-connection.query('INSERT INTO client (nom,prenom,login,mdp,mail,privilege,soc) VALUES (\'Magnaudet-Marto\', \'Elsa\', \''+site+'Admin\', \''+passwordHash.generate(monmdp)+'\',\'elsa.magnaudet@wanadoo.fr\', 1, 1)',function(err,rows,fields){
-	if (err) throw err;
-});
-connection.query('INSERT INTO message (contenu,id_client,expediteur,date_envoi) VALUES (\'Bienvenu sur votre compte Administrateur '+site+'.\', 1, \'Hugo Magnaudet\',NOW())',function(err,rows,fields){
-	if (err) throw err;
-});*/
+/******/
 
 /**********************************************CREATION DICTIONNAIRE SUGGESTION DE SOCIETE**********************************************/
 function Dictionnaire(){
@@ -163,7 +150,7 @@ serv.post('/home/inscription',function(req,res){
 	        }
 	    	}
 	    	if(inscr){
-	   			connection.query('INSERT INTO client (nom,prenom,login,mdp,mail,privilege,soc) VALUES (\''+req.body.lastName+'\',\''+req.body.lastName4+'\',\''+req.body.lastName2+'\',\''+passwordHash.generate(req.body.pwd1)+'\',\''+req.body.myMail+'\', 0,'+soci+')',function(err,rows,fields){
+	   			connection.query('INSERT INTO client (nom,prenom,login,mdp,mail,soc,privilege) VALUES (\''+req.body.lastName+'\',\''+req.body.lastName4+'\',\''+req.body.lastName2+'\',\''+passwordHash.generate(req.body.pwd1)+'\',\''+req.body.myMail+'\', 0,'+soci+', 0)',function(err,rows,fields){
 						if (err) throw err;
 						connection.query('SELECT * FROM client WHERE login=\''+req.body.lastName2+'\' ',function(err,rows,fields){
 							if (err) throw err;
@@ -226,7 +213,7 @@ serv.post('/home/login',function(req,res){
 });
 
 serv.get('/home/login',function(req,res){
-	if(req.session.login != undefined){
+	if(req.session.login != undefined || !req.session.privi){
 		connection.query('SELECT * FROM client WHERE login=\''+req.session.login+'\' ',function(err,rows,fields){
 			if (err) throw err;
 			else{
@@ -252,27 +239,49 @@ serv.get('/home/login',function(req,res){
 });
 /**********************************************ESPACE PERSONNEL**********************************************/
 serv.get('/home/user/:id_user',function(req,res){
-	var iden = req.params.id_user.split(':');
-	var perso = false;
-	connection.query('SELECT * FROM client WHERE login=\''+iden[1]+'\' ',function(err,rows,fields){
-		if(err) throw err;
-		if(req.session.login == rows[0].login){
-			perso = true;
-		}
-		if(req.session.privi == undefined){
-			res.redirect('/home/login');
-		}
-		res.render('profil.ejs',{
-			v_nom : rows[0].nom,
-			v_login : rows[0].login,
-			v_perso : perso,
-			v_site : site,
-			v_admin : req.session.privi
+	if(req.session.privi){
+		var iden = req.params.id_user.split(':');
+		var perso = false;
+		connection.query('SELECT * FROM client WHERE login=\''+iden[1]+'\' ',function(err,rows,fields){
+			if(err) throw err;
+			if(req.session.login == rows[0].login){
+				perso = true;
+			}
+			if(req.session.privi == undefined){
+				res.redirect('/home/login');
+			}
+			var nom = rows[0].nom;
+			var login = rows[0].login;
+			var devis = [];
+			connection.query('SELECT descriptif, login, mail, societe.nom FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc;',function(err,rows,fields){
+				if (err) throw err;
+				for(var i = 0; i < rows.length; i++){
+					tmp = [];
+					tmp.push(rows[i].nom);
+					tmp.push(rows[i].login);
+					tmp.push(rows[i].mail);
+					tmp.push(rows[i].descriptif);
+					devis.push(tmp);
+				}
+				console.log(devis)
+				res.render('profil.ejs',{
+					v_nom : nom,
+					v_login : login,
+					v_perso : perso,
+					v_site : site,
+					v_devis : devis,
+					v_admin : req.session.privi
+				});
+			});
 		});
-	});
+	}
+	else{
+		res.send(401,"Vous ne pouvez pas être là");
+	}
 });
+
 serv.get('/home/modification',function(req,res){
-	if(req.session.login == undefined  || req.session.user == undefined || req.session.privi != 1){
+	if(req.session.login == undefined  || req.session.user == undefined || !req.session.privi){
 		res.send(401,"Vous ne pouvez pas être là");
 	}
 	else{
@@ -281,6 +290,7 @@ serv.get('/home/modification',function(req,res){
 		});
 	}
 });
+
 serv.post('/home/modification',function(req,res){
 	var autorise = true;
 	connection.query('SELECT * FROM client WHERE login=\''+req.body.lastName2+'\' ',function(err,rows,fields){
@@ -293,7 +303,7 @@ serv.post('/home/modification',function(req,res){
 				autorise = false;
 			}
 		}
-		if(autorise && req.body.voiture == undefined){
+		if(autorise == undefined){
 			connection.query('UPDATE client SET nom=\''+req.body.lastName+'\', prenom=\''+req.body.lastName4+'\', login=\''+req.body.lastName2+'\', mdp=\''+passwordHash.generate(req.body.pwd1)+'\', mail=\''+req.body.myMail+'\', privilege=0 WHERE id=\''+req.session.user+'\' ',function(err,rows,fields){
 				if (err) throw err;
 				req.session.login = req.body.lastName2;

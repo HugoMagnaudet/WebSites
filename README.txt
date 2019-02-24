@@ -1,6 +1,4 @@
-Hugo Magnaudet, 21 janvier 2019 :
-
-Placez le dossier "views" ainsi que le fichier script.js dans un même répertoire
+﻿Placez le dossier "views" ainsi que le fichier script.js dans un même répertoire
 
 Pour installer les modules javascript nécessaires :
 - Téléchargez "npm" (sudo apt install npm)
@@ -13,6 +11,8 @@ Liste des noms des modules à installer :
 - mysql
 - password-hash
 - js-alert
+- openurl
+- ejs
 
 Il faut aussi installer nodejs (sudo apt install nodejs).
 
