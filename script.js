@@ -9,7 +9,7 @@ var openurl = require("openurl");
 var win;
 serv = express();
 serv.use(bodyParser.json());
-serv.use(express.static(__dirname + '/public'))
+serv.use('/static',express.static('static'));
 serv.use(bodyParser.urlencoded({ extended: false }));
 serv.use(session({
 	secret : "IsarteCréa",
@@ -259,7 +259,7 @@ serv.get('/home/user/:id_user',function(req,res){
 			var devis = [];
 
 			if(perso){
-			connection.query('SELECT descriptif, login, mail, societe.nom FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 0 OR devis.statut = 2);',function(err,rows,fields){
+			connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 0 OR devis.statut = 2);',function(err,rows,fields){
 				if (err) throw err;
 				for(var i = 0; i < rows.length; i++){
 					tmp = [];
@@ -267,6 +267,9 @@ serv.get('/home/user/:id_user',function(req,res){
 					tmp.push(rows[i].login);
 					tmp.push(rows[i].mail);
 					tmp.push(rows[i].descriptif);
+					tmp.push(rows[i].statut);
+					tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
+					tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
 					devis.push(tmp);
 				}
 				//console.log(devis)
@@ -281,7 +284,7 @@ serv.get('/home/user/:id_user',function(req,res){
 			});
 		}
 		else{
-			connection.query('SELECT descriptif, login, mail, societe.nom FROM devis,client,societe WHERE client.login = \''+iden[1]+'\'AND client.id = devis.id_client AND societe.id = devis.soc;',function(err,rows,fields){
+			connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.login = \''+iden[1]+'\'AND client.id = devis.id_client AND societe.id = devis.soc;',function(err,rows,fields){
 				if (err) throw err;
 				for(var i = 0; i < rows.length; i++){
 					tmp = [];
@@ -289,6 +292,9 @@ serv.get('/home/user/:id_user',function(req,res){
 					tmp.push(rows[i].login);
 					tmp.push(rows[i].mail);
 					tmp.push(rows[i].descriptif);
+					tmp.push(rows[i].statut);
+					tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
+					tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
 					devis.push(tmp);
 				}
 				//console.log(devis)
@@ -418,7 +424,8 @@ serv.get('/home/administration/commandes',function(req,res){
 			tmp.push(rows[i].mail);
 			tmp.push(rows[i].descriptif);
 			tmp.push(rows[i].statut);
-			tmp.push(rows[i].id);
+			tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
+			tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
 			devis.push(tmp);
 		}
 		connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 1 OR devis.statut = 3);',function(err,rows,fields){
@@ -430,17 +437,67 @@ serv.get('/home/administration/commandes',function(req,res){
 				tmp.push(rows[i].mail);
 				tmp.push(rows[i].descriptif);
 				tmp.push(rows[i].statut);
-				tmp.push(rows[i].id);
+				tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
+				tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
 				devis.push(tmp);
 			}
-			res.render('commandes.ejs',{
-				v_login : req.session.login,
-				v_site : site,
-				v_devis : devis,
-				v_admin : req.session.privi
+			connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND devis.statut = 4;',function(err,rows,fields){
+				if (err) throw err;
+				for(var i = 0; i < rows.length; i++){
+					tmp = [];
+					tmp.push(rows[i].nom);
+					tmp.push(rows[i].login);
+					tmp.push(rows[i].mail);
+					tmp.push(rows[i].descriptif);
+					tmp.push(rows[i].statut);
+					tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
+					tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
+					devis.push(tmp);
+				}
+				res.render('commandes.ejs',{
+					v_login : req.session.login,
+					v_site : site,
+					v_devis : devis,
+					v_admin : req.session.privi
+				});
 			});
 		});
 		});
+});
+serv.get('/home/commandes/:id_com',function(req,res){
+	var iden = req.params.id_com.split(':');
+	if(req.session.privi){
+		connection.query('SELECT statut FROM devis WHERE id='+iden[1]+'',function(err,rows,fields){
+			if (err) throw err;
+			if(rows[0].statut == 0){
+				connection.query('UPDATE devis SET statut=1 WHERE id='+iden[1]+'',function(err,rows,fields){
+					if (err) throw err;
+					res.redirect('/home/user/:'+req.session.login);
+				});
+			}
+			else if(rows[0].statut == 2){
+				connection.query('UPDATE devis SET statut=3 WHERE id='+iden[1]+'',function(err,rows,fields){
+					if (err) throw err;
+					res.redirect('/home/user/:'+req.session.login);
+				});
+			}
+		});
+	}
+	else{
+		res.status(401).send("Vous ne devriez pas être ici");
+	}
+});
+serv.get('/home/commandes/annuler/:id_com',function(req,res){
+	var iden = req.params.id_com.split(':');
+	if(req.session.privi){
+		connection.query('UPDATE devis SET statut=4 WHERE id='+iden[1]+'',function(err,rows,fields){
+			if (err) throw err;
+			res.redirect('/home/user/:'+req.session.login);
+		});
+	}
+	else{
+		res.status(401).send("Vous ne devriez pas être ici");
+	}
 });
 /*********************************************SUGGESTIONS DE SOCIETE*************************************************/
 serv.get('/societe/dictionary', function (req,res){

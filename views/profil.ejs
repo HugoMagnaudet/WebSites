@@ -51,6 +51,15 @@
       <hr>
       <p><%= v_devis[i][0]%> - <%= v_devis[i][1]%> : <%= v_devis[i][2]%></p>
       <p><%= v_devis[i][3]%></p>
+      <%if(v_devis[i][4] == 1 || v_devis[i][4] == 3){%>
+        <p> - Acceptée</p>
+      <%}%>
+      <%if(v_devis[i][4] == 4){%>
+        <p> - Refusée</p>
+      <%}%>
+      <%if(v_admin && (v_devis[i][4] == 0 || v_devis[i][4] == 2)){%>
+        <a class="w3-bar-item w3-button" href=<%=v_devis[i][5]%>>Valider</a> <a class="w3-bar-item w3-button" href=<%=v_devis[i][6]%>>Refuser</a>
+      <%}%>
     <%}%>
 
     <hr>
