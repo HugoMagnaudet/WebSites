@@ -64,7 +64,7 @@
     <a class="w3-bar-item w3-button" href="http://localhost:8080/home/administration/commandes">Commandes</a>
     <div class="w3-dropdown-click">
       <button class="w3-button" onclick="myFunction()">
-        Dropdown <i class="fa fa-caret-down"></i>
+        Gestion <i class="fa fa-caret-down"></i>
       </button>
       <div id="demo" class="w3-dropdown-content w3-bar-block w3-card">
         <a class="w3-bar-item w3-button" href="http://localhost:8080/home/modification">Editer mon Profil</a>
@@ -76,8 +76,9 @@
     </div>
   </div>
     <%}%>
-    <h1>Identifiez-vous sur <%= v_site%></h1>
+
     <% if(v_boll == false){%>
+      <h1>Inscrivez un client sur <%= v_site%></h1>
     <form id="myForm" id="iden" autocomplete="off" method="post" action="http://localhost:8080/home/inscription">
         <label class="form_col" for="lastName">Nom :</label>
         <input name="lastName" id="lastName" type="text" required="Champ Obligatoire"/>
@@ -109,6 +110,7 @@
     </form>
     <%}%>
     <% if(v_boll == true){%>
+      <h1>Identifiez-vous sur <%= v_site%></h1>
     <form id="myForm" id="sign" method="post" action="http://localhost:8080/home/login">
 	      <label class="form_col" for="lastName3">Login :</label>
         <input name="lastName3" id="lastName3" type="text" required="Champ Obligatoire"/>

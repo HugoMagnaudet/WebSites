@@ -2,6 +2,56 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8">
+    <style>
+      *{
+      box-sizing: border-box;
+      }
+      body {
+      font: 16px Arial;
+      }
+      .autocomplete {
+      position: relative;
+      display: inline-block;
+      }
+      input {
+      border: 1px solid transparent;
+      background-color: #f1f1f1;
+      padding: 10px;
+      font-size: 16px;
+      }
+      input[type=text] {
+      background-color: #f1f1f1;
+      width: 100%;
+      }
+      input[type=submit] {
+      background-color: DodgerBlue;
+      color: #fff;
+      cursor: pointer;
+      }
+      .autocomplete-items {
+      position: absolute;
+      border: 1px solid #d4d4d4;
+      border-bottom: none;
+      border-top: none;
+      z-index: 99;
+      top: 100%;
+      left: 0;
+      right: 0;
+      }
+      .autocomplete-items div {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #fff;
+      border-bottom: 1px solid #d4d4d4;
+      }
+      .autocomplete-items div:hover {
+      background-color: #e9e9e9;
+      }
+      .autocomplete-active {
+      background-color: DodgerBlue !important;
+      color: #ffffff;
+      }
+    </style>
       <title><%= v_site%></title>
       <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
       <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -14,7 +64,7 @@
     <a class="w3-bar-item w3-button" href="http://localhost:8080/home/administration/commandes">Commandes</a>
     <div class="w3-dropdown-click">
       <button class="w3-button" onclick="myFunction()">
-        Dropdown <i class="fa fa-caret-down"></i>
+        Gestion <i class="fa fa-caret-down"></i>
       </button>
       <div id="demo" class="w3-dropdown-content w3-bar-block w3-card">
         <a class="w3-bar-item w3-button" href="http://localhost:8080/home/modification">Editer mon Profil</a>
@@ -25,7 +75,7 @@
       </div>
     </div>
   </div>
-  
+
     <h1>Gestion de mon espace personnel <%= v_site%></h1>
     <p>* Si vous voulez conserver certaines de ces informations que vous aviez de base retapez les</p>
     <form id="myForm" id="iden" method="post" action="http://localhost:8080/home/modification">
