@@ -4,38 +4,67 @@
     <meta charset="UTF-8">
       <title><%= v_site%></title>
       <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
+    <div class="w3-bar w3-light-grey">
+    <a class="w3-bar-item w3-button" href="http://localhost:8080/home/login">Accéder au site</a>
+    <a class="w3-bar-item w3-button" href="http://localhost:8080/home/administration/commandes">Commandes</a>
+    <div class="w3-dropdown-click">
+      <button class="w3-button" onclick="myFunction()">
+        Dropdown <i class="fa fa-caret-down"></i>
+      </button>
+      <div id="demo" class="w3-dropdown-content w3-bar-block w3-card">
+        <a class="w3-bar-item w3-button" href="http://localhost:8080/home/modification">Editer mon Profil</a>
+        <a class="w3-bar-item w3-button" href="http://localhost:8080/home/messagerie">Messagerie</a>
+        <%if(v_admin){%>
+        <a class="w3-bar-item w3-button" href="http://localhost:8080/home/administration/users">Clients</a>
+        <%}%>
+      </div>
+    </div>
+  </div>
     <%if(v_perso){%>
       <h1>Mon espace personnel <%= v_site%></h1>
-      <a class="lien" href="http://localhost:8080/home/login">Accéder au site</a>
-      <a class="lien" href="http://localhost:8080/home/modification">Editer mon Profil</a>
-      <a class="lien" href="http://localhost:8080/home/messagerie">Messagerie</a>
-      <%if(v_admin){%>
-      <a class="lien" href="http://localhost:8080/home/administration/users">Clients</a>
-      <%}%>
       <p><%= v_nom%>, <%= v_login%></p>
-    <%}else{%>
-      <h1>Profil ArteView de <%= v_login%></h1>
-      <a class="lien" href="http://localhost:8080/home/login">Accéder au site</a>
+      <a class="w3-bar-item w3-button" href="http://localhost:8080/home/administration/commandes">Gérer commandes et devis</a>
     <%}%>
 
+    <%if(v_perso){%>
+      <%if(v_devis.length == 0){%>
+        <p>Ici, bientôt vos commandes</p>
+      <%}else{%>
+        <p>Vos nouvelles commandes et devis :</p>
+      <%}%>
+    <%}else{%>
+      <%if(v_devis.length == 0){%>
+        <p>Ici, bientôt ses commandes</p>
+      <%}else{%>
+        <p>Ses nouvelles commandes et devis :</p>
+      <%}%>
+    <%}%>
     <%
-    if(v_devis.length == 0){
-      %>
-      <p>Ici, bientôt vos commandes</p>
-    <%}else{
-      var taille = v_devis.length;
-      var i;
-      for(i=0; i < taille; i++){%>
-        <hr>
-        <p><%=v_devis[i][0]%> - <%=v_devis[i][1]%> (<%=v_devis[i][2]%>) :</p>
-        <p><%=v_devis[i][3]%></p>
-      <%}
-    }%>
+    var i;
+    var taille = v_devis.length;
+    for(i=0 ; i < taille; i++){
+    %>
+      <hr>
+      <p><%= v_devis[i][0]%> - <%= v_devis[i][1]%> : <%= v_devis[i][2]%></p>
+      <p><%= v_devis[i][3]%></p>
+    <%}%>
 
     <hr>
     <address><a href="mailto:hugo.magnaudet@gmail.com">MAGNAUDET hugo</a></address>
   </body>
+  <script>
+function myFunction() {
+  var x = document.getElementById("demo");
+  if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+  } else {
+    x.className = x.className.replace(" w3-show", "");
+  }
+}
+</script>
   <script src="/script.js"></script>
 </html>

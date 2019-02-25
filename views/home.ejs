@@ -4,8 +4,26 @@
     <meta charset="UTF-8">
     <title><%= v_site%></title>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
+    <div class="w3-bar w3-light-grey">
+    <a class="w3-bar-item w3-button" href="http://localhost:8080/home/login">Accéder au site</a>
+    <a class="w3-bar-item w3-button" href="http://localhost:8080/home/administration/commandes">Commandes</a>
+    <div class="w3-dropdown-click">
+      <button class="w3-button" onclick="myFunction()">
+        Dropdown <i class="fa fa-caret-down"></i>
+      </button>
+      <div id="demo" class="w3-dropdown-content w3-bar-block w3-card">
+        <a class="w3-bar-item w3-button" href="http://localhost:8080/home/modification">Editer mon Profil</a>
+        <a class="w3-bar-item w3-button" href="http://localhost:8080/home/messagerie">Messagerie</a>
+        <%if(v_admin){%>
+        <a class="w3-bar-item w3-button" href="http://localhost:8080/home/administration/users">Clients</a>
+        <%}%>
+      </div>
+    </div>
+  </div>
     <h1><%= v_site%></h1>
     <form id="myForm" id="iden" method="post" action="http://localhost:8080/home">
       <div>
@@ -22,5 +40,15 @@
       <hr>
       <address><a href="mailto:hugo.magnaudet@gmail.com">MAGNAUDET hugo</a></address>
   </body>
+  <script>
+function myFunction() {
+  var x = document.getElementById("demo");
+  if (x.className.indexOf("w3-show") == -1) {
+    x.className += " w3-show";
+  } else {
+    x.className = x.className.replace(" w3-show", "");
+  }
+}
+</script>
   <script src="/script.js"></script>
 </html>

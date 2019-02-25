@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
   <head>
     <meta charset="UTF-8">
-      <title><%= v_site%></title>
-      <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title><%= v_site%></title>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
     <div class="w3-bar w3-light-grey">
     <a class="w3-bar-item w3-button" href="http://localhost:8080/home/login">Accéder au site</a>
     <a class="w3-bar-item w3-button" href="http://localhost:8080/home/administration/commandes">Commandes</a>
-    <%if(v_prin){%>
-      <a class="w3-bar-item w3-button" href=<%=v_link%>>Mon Profil</a>
-    <%}%>
     <div class="w3-dropdown-click">
       <button class="w3-button" onclick="myFunction()">
         Dropdown <i class="fa fa-caret-down"></i>
@@ -27,26 +24,33 @@
       </div>
     </div>
   </div>
-    <h1>Administration utilisateurs <%= v_site%></h1>
-    <p>Administrateur : <%= v_login%></p>
-
-    <%if(v_admin){
-      var i;
-      %>
-      <a class="lien" href="http://localhost:8080/home/inscription">Inscrire un utilisateur</a>
+    <%if(v_admin){%>
+      <p><%= v_login%>, historique des commandes</p>
+      <hr>
+      <p>En attente :</p>
       <%
-      for(i=(v_client.length)-1;i>=0; i--){%>
-        <hr>
-        <p>
-          <%var j;
-          for(j=0;j<4; j++){%>
-            <%= v_client[i][j]%>
+        var i;
+        var taille = v_devis.length;
+        for(i=taille-1;i>=0;i--){
+          if(v_devis[i][4] == 0 || v_devis[i][4] == 2){%>
+            <hr>
+            <p><%= v_devis[i][0]%> - <%= v_devis[i][1]%> : <%= v_devis[i][2]%></p>
+            <p><%= v_devis[i][3]%></p>
           <%}%>
-          <a class="lien" href=<%=v_client[i][4]%>>Son Profil</a>
-        </p>
-      <%}%>
+        <%}%>
+        <hr>
+      <p>Traîtées :</p>
+      <%
+        var i;
+        var taille = v_devis.length;
+        for(i=taille-1;i>=0;i--){
+          if(v_devis[i][4] == 1 || v_devis[i][4] == 3){%>
+            <hr>
+            <p><%= v_devis[i][0]%> - <%= v_devis[i][1]%> : <%= v_devis[i][2]%></p>
+            <p><%= v_devis[i][3]%></p>
+          <%}%>
+        <%}%>
     <%}%>
-
     <hr>
     <address><a href="mailto:hugo.magnaudet@gmail.com">MAGNAUDET hugo</a></address>
   </body>

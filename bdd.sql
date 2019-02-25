@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS devis(
   id_client INT UNSIGNED NOT NULL,
   soc INT UNSIGNED NOT NULL,
   descriptif VARCHAR(255) NOT NULL,
+  statut INT UNSIGNED NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY(id_client) REFERENCES client(id),
   FOREIGN KEY(soc) REFERENCES client(soc)
@@ -48,6 +49,8 @@ INSERT INTO societe (nom) VALUES ('Sorbonne Université - UPMC');
 INSERT INTO societe (nom) VALUES ('PC UP');
 INSERT INTO client (nom,prenom,login,mdp,mail,soc,privilege) VALUES ('Leb', 'Raph', 'RaphLeb', "Raph",'raph.leb@gmail.com', 2, 0);
 INSERT INTO client (nom,prenom,login,mdp,mail,soc,privilege) VALUES ('Leb', 'Flo', 'FloLeb', "Flo",'flo.leb@gmail.com', 2, 0);
+INSERT INTO client (nom,prenom,login,mdp,mail,soc,privilege) VALUES ('Bam', 'Ibra', 'Ikader', "Ibra",'ikader.test@gmail.com', 1, 0);
 INSERT INTO message (contenu,id_client,expediteur,date_envoi) VALUES ('Bienvenu sur votre compte Administrateur IsarteCréa.', 1, 'Hugo Magnaudet',NOW());
-INSERT INTO devis (id_client,soc,descriptif) VALUES (1,2,'Voilà un devis test !');
-INSERT INTO devis (id_client,soc,descriptif) VALUES (2,2,'Ceci est un autre devis test !');
+INSERT INTO devis (id_client,soc,descriptif,statut) VALUES (1,2,'Voilà un devis test !',0);
+INSERT INTO devis (id_client,soc,descriptif,statut) VALUES (2,2,'Ceci est un autre devis test !',0);
+INSERT INTO devis (id_client,soc,descriptif,statut) VALUES (3,1,'Encore un devis de test ?',1);

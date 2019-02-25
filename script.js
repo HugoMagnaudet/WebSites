@@ -100,6 +100,8 @@ connection.query('SELECT nom FROM societe',function(err,rows,fields){
 /**********************************************ACCEUIL/CONNEXION/INSCRIPTION**********************************************/
 serv.get('/',function(req,res){
       res.render('formulaire.ejs',{
+				v_login : req.session.login,
+				v_admin : false,
         v_boll : true,
 				v_site : site
       });
@@ -108,6 +110,8 @@ serv.get('/',function(req,res){
 serv.get('/home/inscription',function(req,res){
 	if(req.session.privi){
 		res.render('formulaire.ejs',{
+			v_login : req.session.login,
+			v_admin : req.session.privi,
 			v_boll : false,
 			v_site : site
 		});
@@ -253,7 +257,9 @@ serv.get('/home/user/:id_user',function(req,res){
 			var nom = rows[0].nom;
 			var login = rows[0].login;
 			var devis = [];
-			connection.query('SELECT descriptif, login, mail, societe.nom FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc;',function(err,rows,fields){
+
+			if(perso){
+			connection.query('SELECT descriptif, login, mail, societe.nom FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 0 OR devis.statut = 2);',function(err,rows,fields){
 				if (err) throw err;
 				for(var i = 0; i < rows.length; i++){
 					tmp = [];
@@ -263,7 +269,7 @@ serv.get('/home/user/:id_user',function(req,res){
 					tmp.push(rows[i].descriptif);
 					devis.push(tmp);
 				}
-				console.log(devis)
+				//console.log(devis)
 				res.render('profil.ejs',{
 					v_nom : nom,
 					v_login : login,
@@ -273,6 +279,29 @@ serv.get('/home/user/:id_user',function(req,res){
 					v_admin : req.session.privi
 				});
 			});
+		}
+		else{
+			connection.query('SELECT descriptif, login, mail, societe.nom FROM devis,client,societe WHERE client.login = \''+iden[1]+'\'AND client.id = devis.id_client AND societe.id = devis.soc;',function(err,rows,fields){
+				if (err) throw err;
+				for(var i = 0; i < rows.length; i++){
+					tmp = [];
+					tmp.push(rows[i].nom);
+					tmp.push(rows[i].login);
+					tmp.push(rows[i].mail);
+					tmp.push(rows[i].descriptif);
+					devis.push(tmp);
+				}
+				//console.log(devis)
+				res.render('profil.ejs',{
+					v_nom : nom,
+					v_login : login,
+					v_perso : perso,
+					v_site : site,
+					v_devis : devis,
+					v_admin : req.session.privi
+				});
+			});
+		}
 		});
 	}
 	else{
@@ -286,6 +315,7 @@ serv.get('/home/modification',function(req,res){
 	}
 	else{
 		res.render('modif.ejs',{
+			v_admin : req.session.privi,
 			v_site : site
 		});
 	}
@@ -333,6 +363,7 @@ serv.get('/home/messagerie',function(req,res){
 				dat.push(madate);
 			}
 			res.render('messagerie.ejs',{
+				v_admin : req.session.privi,
 				v_mess : tab,
 				v_exp : exp,
 				v_date : dat,
@@ -375,8 +406,43 @@ serv.get('/home/administration/users',function(req,res){
 		res.status(401).send("Erreur 401, you don't have the authorization to be there");
 	}
 });
-
-/*********************************************SUGGESTIONS D'ADDRESSE*************************************************/
+/****************************************************COMMANDES*******************************************************/
+serv.get('/home/administration/commandes',function(req,res){
+	var devis = []
+	connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 0 OR devis.statut = 2);',function(err,rows,fields){
+		if (err) throw err;
+		for(var i = 0; i < rows.length; i++){
+			tmp = [];
+			tmp.push(rows[i].nom);
+			tmp.push(rows[i].login);
+			tmp.push(rows[i].mail);
+			tmp.push(rows[i].descriptif);
+			tmp.push(rows[i].statut);
+			tmp.push(rows[i].id);
+			devis.push(tmp);
+		}
+		connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 1 OR devis.statut = 3);',function(err,rows,fields){
+			if (err) throw err;
+			for(var i = 0; i < rows.length; i++){
+				tmp = [];
+				tmp.push(rows[i].nom);
+				tmp.push(rows[i].login);
+				tmp.push(rows[i].mail);
+				tmp.push(rows[i].descriptif);
+				tmp.push(rows[i].statut);
+				tmp.push(rows[i].id);
+				devis.push(tmp);
+			}
+			res.render('commandes.ejs',{
+				v_login : req.session.login,
+				v_site : site,
+				v_devis : devis,
+				v_admin : req.session.privi
+			});
+		});
+		});
+});
+/*********************************************SUGGESTIONS DE SOCIETE*************************************************/
 serv.get('/societe/dictionary', function (req,res){
 	res.json(dic.list());
 });
