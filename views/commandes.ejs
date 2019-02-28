@@ -6,6 +6,50 @@
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+    .attente{
+      border-left : solid;
+      border-left-width: 6px;
+      border-left-color: yellow;
+      background-color: lightgrey;
+      border-radius: 10px;
+    }
+    .valide{
+      border-left : solid;
+      border-left-width: 6px;
+      border-left-color: green;
+      background-color: lightgrey;
+      border-radius: 10px;
+    }
+    .denied{
+      border-left : solid;
+      border-left-width: 6px;
+      border-left-color: red;
+      background-color: lightgrey;
+      border-radius: 10px;
+    }
+    .inner{
+      padding-left : 6px;
+    }
+    #but{
+      border-style: solid;
+      border-width: 1px;
+      border-radius: 10px;
+    }
+    #but1{
+      border-style: solid;
+      border-width: 1px;
+      border-radius: 10px;
+      background-color: #b3ffb3;
+      margin-left: 6px;
+    }
+    #but2{
+      border-style: solid;
+      border-width: 1px;
+      border-radius: 10px;
+      background-color: #ff6666;
+    }
+    </style>
   </head>
   <body>
     <div class="w3-bar w3-light-grey">
@@ -33,24 +77,27 @@
         var taille = v_devis.length;
         for(i=taille-1;i>=0;i--){
           if(v_devis[i][4] == 0 || v_devis[i][4] == 2){%>
-            <hr>
+            <div class="attente">
             <p><%= v_devis[i][0]%> - <%= v_devis[i][1]%> : <%= v_devis[i][2]%></p>
             <p><%= v_devis[i][3]%></p>
             <%if(v_admin && (v_devis[i][4] == 0 || v_devis[i][4] == 2)){%>
-              <a class="w3-bar-item w3-button" href=<%=v_devis[i][5]%>>Valider</a> <a class="w3-bar-item w3-button" href=<%=v_devis[i][6]%>>Refuser</a>
+              <a id="but1" class="w3-bar-item w3-button" href=<%=v_devis[i][5]%>>Valider</a> <a id="but2" class="w3-bar-item w3-button" href=<%=v_devis[i][6]%>>Refuser</a>
             <%}%>
+          </div>
           <%}%>
         <%}%>
         <hr>
+
       <p>Traîtées :</p>
       <%
         var i;
         var taille = v_devis.length;
         for(i=taille-1;i>=0;i--){
           if(v_devis[i][4] == 1 || v_devis[i][4] == 3){%>
-            <hr>
+            <div class="valide">
             <p><%= v_devis[i][0]%> - <%= v_devis[i][1]%> : <%= v_devis[i][2]%></p>
             <p><%= v_devis[i][3]%></p>
+          </div>
           <%}%>
         <%}%>
         <hr>
@@ -60,9 +107,10 @@
           var taille = v_devis.length;
           for(i=taille-1;i>=0;i--){
             if(v_devis[i][4] == 4){%>
-              <hr>
+            <div class="denied">
               <p><%= v_devis[i][0]%> - <%= v_devis[i][1]%> : <%= v_devis[i][2]%></p>
               <p><%= v_devis[i][3]%></p>
+            </div>
             <%}%>
           <%}%>
     <%}%>

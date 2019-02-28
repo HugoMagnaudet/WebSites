@@ -258,8 +258,8 @@ serv.get('/home/user/:id_user',function(req,res){
 			var login = rows[0].login;
 			var devis = [];
 
-			if(perso){
-			connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 0 OR devis.statut = 2);',function(err,rows,fields){
+			if(perso && req.session.privi){
+			connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id, prix FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 0 OR devis.statut = 2);',function(err,rows,fields){
 				if (err) throw err;
 				for(var i = 0; i < rows.length; i++){
 					tmp = [];
@@ -270,6 +270,14 @@ serv.get('/home/user/:id_user',function(req,res){
 					tmp.push(rows[i].statut);
 					tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
 					tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
+					tmp.push(rows[i].prix)
+					var somme = 0;
+					for(var j = 0; j < devis.length; j++){
+						if(devis[j][0] == rows[i].nom){
+							somme += devis[j][7];
+						}
+					}
+					tmp.push(somme+rows[i].prix);
 					devis.push(tmp);
 				}
 				//console.log(devis)
@@ -284,7 +292,7 @@ serv.get('/home/user/:id_user',function(req,res){
 			});
 		}
 		else{
-			connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.login = \''+iden[1]+'\'AND client.id = devis.id_client AND societe.id = devis.soc;',function(err,rows,fields){
+			connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id, prix FROM devis,client,societe WHERE client.login = \''+iden[1]+'\'AND client.id = devis.id_client AND societe.id = devis.soc;',function(err,rows,fields){
 				if (err) throw err;
 				for(var i = 0; i < rows.length; i++){
 					tmp = [];
@@ -295,6 +303,14 @@ serv.get('/home/user/:id_user',function(req,res){
 					tmp.push(rows[i].statut);
 					tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
 					tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
+					tmp.push(rows[i].prix)
+					var somme = 0;
+					for(var j = 0; j < devis.length; j++){
+						if(devis[j][0] == rows[i].nom){
+							somme += devis[j][7];
+						}
+					}
+					tmp.push(somme+rows[i].prix);
 					devis.push(tmp);
 				}
 				//console.log(devis)
@@ -426,6 +442,14 @@ serv.get('/home/administration/commandes',function(req,res){
 			tmp.push(rows[i].statut);
 			tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
 			tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
+			tmp.push(rows[i].prix)
+			var somme = 0;
+			for(var j = 0; j < devis.length; j++){
+				if(devis[j][0] == rows[i].nom){
+					somme += devis[j][7];
+				}
+			}
+			tmp.push(somme+rows[i].prix);
 			devis.push(tmp);
 		}
 		connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 1 OR devis.statut = 3);',function(err,rows,fields){
