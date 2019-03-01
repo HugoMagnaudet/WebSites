@@ -53,6 +53,7 @@ INSERT INTO client (nom,prenom,login,mdp,mail,soc,privilege) VALUES ('Leb', 'Flo
 INSERT INTO client (nom,prenom,login,mdp,mail,soc,privilege) VALUES ('Bam', 'Ibra', 'Ikader', "Ibra",'ikader.test@gmail.com', 1, 0);
 INSERT INTO message (contenu,id_client,expediteur,date_envoi) VALUES ('Bienvenu sur votre compte Administrateur IsarteCréa.', 1, 'Hugo Magnaudet',NOW());
 INSERT INTO devis (id_client,soc,descriptif,statut,prix) VALUES (1,2,'Voilà un devis test !',0,1000);
-INSERT INTO devis (id_client,soc,descriptif,statut,prix) VALUES (2,2,'Ceci est un autre devis test !',0,1000);
+INSERT INTO devis (id_client,soc,descriptif,statut,prix) VALUES (2,2,'Ceci est un autre devis test !',5,1000);
 INSERT INTO devis (id_client,soc,descriptif,statut,prix) VALUES (2,2,'Devis pour tester l\'en-cours !',0,3000);
+INSERT INTO devis (id_client,soc,descriptif,statut,prix) VALUES (1,2,'Devis pour tester l\'en-cours !',4,500);
 INSERT INTO devis (id_client,soc,descriptif,statut,prix) VALUES (3,1,'Encore un devis de test ?',1,500);

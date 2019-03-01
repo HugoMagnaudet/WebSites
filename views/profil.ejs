@@ -35,6 +35,13 @@
           background-color: lightgrey;
           border-radius: 10px;
         }
+        .finish{
+          border-left : solid;
+          border-left-width: 6px;
+          border-left-color: blue;
+          background-color: lightgrey;
+          border-radius: 10px;
+        }
         .inner{
           padding-left : 6px;
         }
@@ -112,6 +119,9 @@
         <div class="encours">
       <%}else{%><div class="attente"><%}%>
 
+    <%}%>
+    <%if(v_admin && v_devis[i][4] == 5){%>
+      <div class="finish">
     <%}%>
       <p class="inner"><%= v_devis[i][0]%> - <%= v_devis[i][1]%> : <%= v_devis[i][2]%>
         <%if(v_admin && v_perso){%>

@@ -431,28 +431,8 @@ serv.get('/home/administration/users',function(req,res){
 /****************************************************COMMANDES*******************************************************/
 serv.get('/home/administration/commandes',function(req,res){
 	var devis = []
-	connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 0 OR devis.statut = 2);',function(err,rows,fields){
-		if (err) throw err;
-		for(var i = 0; i < rows.length; i++){
-			tmp = [];
-			tmp.push(rows[i].nom);
-			tmp.push(rows[i].login);
-			tmp.push(rows[i].mail);
-			tmp.push(rows[i].descriptif);
-			tmp.push(rows[i].statut);
-			tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
-			tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
-			tmp.push(rows[i].prix)
-			var somme = 0;
-			for(var j = 0; j < devis.length; j++){
-				if(devis[j][0] == rows[i].nom){
-					somme += devis[j][7];
-				}
-			}
-			tmp.push(somme+rows[i].prix);
-			devis.push(tmp);
-		}
-		connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 1 OR devis.statut = 3);',function(err,rows,fields){
+	if(req.session.login != undefined && req.session.privi){
+		connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id,prix FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 0 OR devis.statut = 2);',function(err,rows,fields){
 			if (err) throw err;
 			for(var i = 0; i < rows.length; i++){
 				tmp = [];
@@ -463,9 +443,17 @@ serv.get('/home/administration/commandes',function(req,res){
 				tmp.push(rows[i].statut);
 				tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
 				tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
+				tmp.push(rows[i].prix)
+				var somme = 0;
+				for(var j = 0; j < devis.length; j++){
+					if(devis[j][0] == rows[i].nom){
+						somme += devis[j][7];
+					}
+				}
+				tmp.push(somme+rows[i].prix);
 				devis.push(tmp);
 			}
-			connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND devis.statut = 4;',function(err,rows,fields){
+			connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id, prix FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND (devis.statut = 1 OR devis.statut = 3);',function(err,rows,fields){
 				if (err) throw err;
 				for(var i = 0; i < rows.length; i++){
 					tmp = [];
@@ -476,17 +464,72 @@ serv.get('/home/administration/commandes',function(req,res){
 					tmp.push(rows[i].statut);
 					tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
 					tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
+					tmp.push(rows[i].prix)
+					var somme = 0;
+					for(var j = 0; j < devis.length; j++){
+						if(devis[j][0] == rows[i].nom){
+							somme += devis[j][7];
+						}
+					}
+					tmp.push(somme+rows[i].prix);
 					devis.push(tmp);
 				}
-				res.render('commandes.ejs',{
-					v_login : req.session.login,
-					v_site : site,
-					v_devis : devis,
-					v_admin : req.session.privi
+				connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id, prix FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND devis.statut = 4;',function(err,rows,fields){
+					if (err) throw err;
+					for(var i = 0; i < rows.length; i++){
+						tmp = [];
+						tmp.push(rows[i].nom);
+						tmp.push(rows[i].login);
+						tmp.push(rows[i].mail);
+						tmp.push(rows[i].descriptif);
+						tmp.push(rows[i].statut);
+						tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
+						tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
+						tmp.push(rows[i].prix)
+						var somme = 0;
+						for(var j = 0; j < devis.length; j++){
+							if(devis[j][0] == rows[i].nom){
+								somme += devis[j][7];
+							}
+						}
+						tmp.push(somme+rows[i].prix);
+						devis.push(tmp);
+					}
+					connection.query('SELECT descriptif, login, mail, societe.nom, devis.statut, devis.id,prix FROM devis,client,societe WHERE client.id = devis.id_client AND societe.id = devis.soc AND devis.statut = 5;',function(err,rows,fields){
+						if (err) throw err;
+						for(var i = 0; i < rows.length; i++){
+							tmp = [];
+							tmp.push(rows[i].nom);
+							tmp.push(rows[i].login);
+							tmp.push(rows[i].mail);
+							tmp.push(rows[i].descriptif);
+							tmp.push(rows[i].statut);
+							tmp.push("http://localhost:8080/home/commandes/:"+rows[i].id);
+							tmp.push("http://localhost:8080/home/commandes/annuler/:"+rows[i].id);
+							tmp.push(rows[i].prix)
+							var somme = 0;
+							for(var j = 0; j < devis.length; j++){
+								if(devis[j][0] == rows[i].nom){
+									somme += devis[j][7];
+								}
+							}
+							tmp.push(somme+rows[i].prix);
+							devis.push(tmp);
+						}
+					res.render('commandes.ejs',{
+						v_login : req.session.login,
+						v_site : site,
+						v_devis : devis,
+						v_admin : req.session.privi
+					});
+				});
 				});
 			});
-		});
-		});
+			});
+		}
+		else{
+			res.status(401).send("Erreur 401, you don't have the authorization to be there");
+		}
 });
 serv.get('/home/commandes/:id_com',function(req,res){
 	var iden = req.params.id_com.split(':');
@@ -501,6 +544,12 @@ serv.get('/home/commandes/:id_com',function(req,res){
 			}
 			else if(rows[0].statut == 2){
 				connection.query('UPDATE devis SET statut=3 WHERE id='+iden[1]+'',function(err,rows,fields){
+					if (err) throw err;
+					res.redirect('/home/user/:'+req.session.login);
+				});
+			}
+			else if(rows[0].statut == 1 || rows[0].statut == 3){
+				connection.query('UPDATE devis SET statut=5 WHERE id='+iden[1]+'',function(err,rows,fields){
 					if (err) throw err;
 					res.redirect('/home/user/:'+req.session.login);
 				});
