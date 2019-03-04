@@ -3,9 +3,11 @@
 
 <style>
 
-    .alert .alert-success fade in {
+    .alert .alert-warning fade in {
         padding-top: 50px
-        
+    }
+    p {
+        padding-left: 30px
     }
 </style>
 </head>
@@ -14,11 +16,11 @@
 </br>
 </br>
 </br>
-    <div class="alert alert-success fade in">
+    <div class="alert alert-warning fade in">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <strong>Succès</strong> Enregistrement <?php echo $objet;?> : OK ;  
+        
+        <p> <strong>Echec</strong> Utilisateur ou mot de passe incorrect </p> 
     </div>    
-
 
 
 </body>

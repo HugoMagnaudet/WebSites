@@ -37,7 +37,7 @@
     
     <div class="col-md-4 col-md-6"> 
         <label for="inputMotdePasse">Mot de passe</label>
-        <input class="form-control" type="password" name="user_mdp" value="<?php echo set_value('user_mdp'); ?>" size="60px" placeholder="Mot de passe"/>
+        <input class="form-control" type="password" name="mdp" value="<?php echo set_value('mdp'); ?>" size="60px" placeholder="Mot de passe"/>
     </div>
      
     <div class="col-md-4 col-md-6"> 
@@ -51,32 +51,29 @@
     </div>
   </div>   
      
-
-    <fieldset class="form-group">
-    <div class="row">
+  <div class="row">
       <legend class="col-form-label col-sm-2 pt-0">Rôle</legend>
       <div class="col-sm-10">
         <div class="form-check">
-          <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="option1" checked>
+          <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="C" checked>
           <label class="form-check-label" for="gridRadios1">
             Client
           </label>
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="option2">
+          <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="F">
           <label class="form-check-label" for="gridRadios2">
             fournisseur
           </label>
         </div>
         <div class="form-check disabled">
-          <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="option3">
+          <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios3" value="A">
           <label class="form-check-label" for="gridRadios3">
             Administrateur
           </label>
         </div>
       </div>
     </div>
-  </fieldset>
 
 
     </br>

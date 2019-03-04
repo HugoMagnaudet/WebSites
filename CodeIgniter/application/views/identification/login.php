@@ -27,9 +27,9 @@
 </div>
 </br>
 <div class="form-group">
-<label for="user_mdp">Mot de passe</label>
+<label for="mdp">Mot de passe</label>
 </br>
-<input class="form-control" type="password" name="user_mdp" placeholder="Votre mot de passe" value="<?php echo set_value('user_mdp'); ?>" />
+<input class="form-control" type="password" name="mdp" placeholder="Votre mot de passe" value="<?php echo set_value('mdp'); ?>" />
 </div>
 </br>
 

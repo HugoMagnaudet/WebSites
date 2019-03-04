@@ -53,5 +53,3 @@ $route['default_controller'] = 'authent';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
-
-

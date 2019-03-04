@@ -7,29 +7,31 @@ public function __construct()
     $this->load->database();
 }
         
-public function myEncrypt($user_mdp)
+public function myEncrypt($mdp)
         {
-            $user_mdp=sha1($user_mdp);
-            return $user_mdp;
+            $mdp=sha1($mdp);
+            return $mdp;
         }      
         
-public function insert_user($nom, $prenom, $raison_sociale, $mail, $user_mdp) 
+public function insert_user($nom, $prenom, $raison_sociale, $mail, $mdp, $type_user) 
         {
-            $query = $this->db->insert('users', 
+            $this->db->insert('users', 
                array(
                        'nom' => $nom, 
                        'prenom' => $prenom,
                        'raison_sociale' => $raison_sociale,
-                       'user_mdp'=>$user_mdp,        
-                       'mail' => $mail,)
+                       'mdp'=>$mdp,        
+                       'mail' => $mail,
+                       'type_user' => $type_user,)
                      );
         }
 
-public function get_users($mail , $user_mdp)
+public function get_users($mail , $mdp)
         {
 
             $query = $this->db->get_where('users', array('mail' => $mail,
-                                                    'user_mdp' => $user_mdp,));
+                                                    'mdp' => $mdp, 
+                                                 ));
        
             return $query->row_array();
 

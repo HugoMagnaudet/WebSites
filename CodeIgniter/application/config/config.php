@@ -35,7 +35,7 @@ $config['base_url'] = 'http://localhost/isaq';
 | variable so that it is blank.
 |
 */
-$config['index_page'] = 'index.php';
+$config['index_page'] = '';
 
 /*
 |--------------------------------------------------------------------------
@@ -159,6 +159,7 @@ $config['composer_autoload'] = FALSE;
 |
 */
 $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
+//$config['permitted_uri_chars'] = 'a-z 0-9~%?=&.:_\-';
 
 /*
 |--------------------------------------------------------------------------
