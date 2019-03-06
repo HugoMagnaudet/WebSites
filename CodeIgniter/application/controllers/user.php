@@ -10,7 +10,7 @@ class User extends CI_Controller {
   private function sessionUser() {
  
     if (!$this->session->userdata('id_user')) {
-      redirect('/');
+      redirect('');
     }
   }
   

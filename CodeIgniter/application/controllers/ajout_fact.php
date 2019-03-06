@@ -29,9 +29,9 @@ $this->load->library('form_validation');
 $this->load->library('session');
 
 $this->form_validation->set_rules('adressefact', 'adresse', 'required',
-                array(
-                'required'      => 'Vous devez fournir une %s.',                   
-                ));
+        array(
+        'required'      => 'Vous devez fournir une %s.',                   
+        ));
 
 $this->form_validation->set_rules('code_postal_fact', 'code postal', 'required',
         array(
@@ -52,9 +52,9 @@ $this->form_validation->set_rules('pays_fact', 'Pays', 'required',
         if ($this->form_validation->run() == FALSE)
         {   
             $this->load->model('fact_model');
-
             $data['title'] = 'Formulaire Ajout adresse facturation';
             $this->load->view('header',$data); 
+          //récupération des société pour le menu déroulant  
             $data['choix_societe'] = $this->fact_model->liste_societe();
             $this->load->view('isaq/administration/form_fact', $data);
             
@@ -62,21 +62,18 @@ $this->form_validation->set_rules('pays_fact', 'Pays', 'required',
 
         else
         {
-            $data['title'] = 'Ajout adresse facturation';
-            
-            
-        //==============Ajout société dans la base====================
-
-            
-       //on recupere les variables Adresse de facturation de la vue
+            $this->load->model('fact_model');
+        //==============Ajout adresse dans la base====================
+        
+       //on recupere les variables Adresse facturation depuis la vue
+            $raison_sociale = $this->input->post('raison_sociale');
             $adressefact = $this->input->post('adressefact');
             $adressefact1 = $this->input->post('adressefact1');
             $adressefact2 = $this->input->post('adressefact2');
             $adressefact3 = $this->input->post('adressefact3');
-            $code_postal_fact = $this->input->post('code_postal');
+            $code_postal_fact = $this->input->post('code_postal_fact');
             $ville_fact = $this->input->post('ville_fact');
             $pays_fact = $this->input->post('pays_fact');
-            $mail_fact = $this->input->post('mail_fact');
             $num_tva_intra = $this->input->post('num_tva_intra');
             $cond_paiement  = $this->input->post('cond_paiement');
             $encours_max  = $this->input->post('encours_max');
@@ -84,7 +81,7 @@ $this->form_validation->set_rules('pays_fact', 'Pays', 'required',
 
         //on envoie la requete a la fonction avec les parametres
              
-            $data['facturation'] = $this->fact_model->insert_facturation($adressefact, $adressefact1, $adressefact2, $adressefact3, $code_postal_fact, $ville_fact, $pays_fact, $mail_fact, $num_tva_intra, $cond_paiement, $encours_max );    
+            $this->fact_model->insert_facturation($adressefact, $adressefact1, $adressefact2, $adressefact3, $code_postal_fact, $ville_fact, $pays_fact, $num_tva_intra, $cond_paiement, $encours_max );    
         
 
         // si tout c'est bien passé on affiche la vue de succes 

@@ -10,18 +10,17 @@ public function __construct()
 
 //ajouter la clause where pour rattacher adresse fact a la bonne société
 
-public function insert_facturation($adressefact, $adressefact1, $adressefact2, $adressefact3, $code_postal_fact, $ville_fact, $pays_fact, $mail_fact, $num_tva_intra, $cond_paiement, $encours_max )
+public function insert_facturation($adressefact, $adressefact1, $adressefact2, $adressefact3, $code_postal_fact, $ville_fact, $pays_fact, $num_tva_intra, $cond_paiement, $encours_max )
         {
             $query = $this->db->insert('adresse_facturation', 
                array(
-                   'adressefact'        => $adressefact,
-                   'adressefact1'       => $adressefact1,  
-                   'adressefact2'       => $adressefact2,  
-                   'adressefact3'       => $adressefact3,
-                   'code_postal_fact'    => $code_postal_fact,  
-                   'ville_fact'          => $ville_fact,  
-                   'pays_fact'           => $pays_fact,  
-                   'mail_fact'           => $mail_fact,
+                   'adresse'        => $adressefact,
+                   'adresse1'       => $adressefact1,  
+                   'adresse2'       => $adressefact2,  
+                   'adresse3'       => $adressefact3,
+                   'code_postal'    => $code_postal_fact,  
+                   'ville'          => $ville_fact,  
+                   'pays'           => $pays_fact,  
                    'num_tva_intra'  => $num_tva_intra,
                    'cond_paiement'  => $cond_paiement,
                    'encours_max'    => $encours_max,)

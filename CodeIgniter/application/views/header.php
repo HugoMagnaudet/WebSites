@@ -24,7 +24,13 @@
   <ul class="nav navbar-nav">
     <li><?= anchor('index', "Accueil"); ?></li>
     <li><?= anchor('site/apropos', "À propos"); ?></li>
-    <li><?= anchor('contact', "Contact"); ?></li>
+    <li><?= anchor('contact', "Contact"); ?></li>  
+    <li><?php if($this->auth_user_model->is_connected) : ?> 
+        
+            <li>
+                <?= anchor('devis', "Demande de devis"); ?>
+            </li>
+                <?php endif; ?> 
     
     
 <!--- MENU ADMIN === VISIBLE UNIQUEMENT EN CONNEXION ADMIN--->    
@@ -48,6 +54,8 @@
       <li>
         <?= anchor('ajout_fact', "Adresse facturation"); ?>
       </li>
+  </div> 
+ </div>
     <?php endif; ?>
 
 <!---  FIN MENU ADMIN--->
@@ -57,7 +65,13 @@
   <ul class="nav navbar-nav navbar-right">
     <?php if($this->auth_user_model->is_connected) : ?>
       <li><?= anchor('authent/deconnexion', "Déconnexion"); ?></li>
-      <li><?= anchor('authent/info_compte', "Mon Compte"); ?></li>
+      <?php if ($this->auth_user_model->is_connected) : ?>
+        <div class="dropdown-menu">
+            <li>
+                <?= anchor('devis', "Demande de devis"); ?>
+            </li>     
+ </div>
+    <?php endif; ?>
     <?php else: ?>
       <li><?= anchor('authent/connexion', "Connexion"); ?></li>
     <?php endif; ?>

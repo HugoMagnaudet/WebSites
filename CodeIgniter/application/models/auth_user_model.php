@@ -48,6 +48,9 @@ class Auth_user_model extends CI_Model {
     protected function get_property_nom() {
     return $this->_nom; 
     }
+    protected function get_property_prenom() {
+    return $this->_prenom; 
+    }
     
     protected function get_property_is_admin() {
     return $this->_type_user=='A'; 
@@ -55,9 +58,10 @@ class Auth_user_model extends CI_Model {
 
     protected function load_from_session() {
         if ($this->session->auth_user_model) {
-            $this->_id = $this->session->auth_user_model['id'];
+            $this->_id = $this->session->auth_user_model['id'];       
             $this->_mail = $this->session->auth_user_model['mail'];
             $this->_nom = $this->session->auth_user_model['nom'];
+            $this->_nom = $this->session->auth_user_model['prenom'];
             $this->_type_user = $this->session->auth_user_model['type_user'];
             
         } else {
@@ -77,7 +81,7 @@ public function myEncrypt($mdp)
 public function get_users($mail , $mdp)
         {
         return $this->db
-                    ->select('id, mail, mdp, nom, type_user')
+                    ->select('id, mail, mdp, nom, prenom, type_user')
                     ->from('users')
                     ->where('mail', $mail)
                     ->where('mdp', $mdp)
@@ -98,6 +102,7 @@ public function get_users($mail , $mdp)
             $this->_id = $query->id;
             $this->_mail = $query->mail;
             $this->_nom = $query->nom;
+            $this->_prenom = $query->prenom;
             $this->_type_user = $query->type_user;
             
             $this->save_session();
@@ -114,6 +119,7 @@ public function get_users($mail , $mdp)
             'id' => $this->_id,
             'mail' => $this->_mail,
             'nom'  => $this->_nom,
+            'prenom'  => $this->_prenom,
             'type_user'  => $this->_type_user,
         ];
     }
